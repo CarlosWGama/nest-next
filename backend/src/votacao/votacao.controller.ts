@@ -7,8 +7,8 @@ export class VotacaoController {
   constructor(private readonly votacaoService: VotacaoService) {}
 
   @Post()
-  create(@Body() createVotacaoDto: CreateVotacaoDto) {
-    return this.votacaoService.create(createVotacaoDto);
+  async create(@Body() createVotacaoDto: CreateVotacaoDto) {
+    return await this.votacaoService.create(createVotacaoDto);
   }
 
   @Get()

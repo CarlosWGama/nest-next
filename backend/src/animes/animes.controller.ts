@@ -12,7 +12,7 @@ export class AnimesController {
   }
 
   @Get('rank')
-  findOne() {
+  rank() {
     return this.animesService.rank();
   }
 }

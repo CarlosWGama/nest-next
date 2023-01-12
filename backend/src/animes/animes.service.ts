@@ -1,21 +1,27 @@
 import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../prisma.service';
 
 @Injectable()
 export class AnimesService {
+
+  constructor(private prisma: PrismaService) {}
   
-  findAll() {
-    return [
-      {id: 1, titulo: 'Bleach', url: 'http://blablabla'},
-      {id: 1, titulo: 'Spy X Family', url: 'http://blablabla'},
-      {id: 1, titulo: 'Chainsaw Man', url: 'http://blablabla'},
-    ]
+  async findAll() {
+    return this.prisma.anime.findMany();
   }
 
-  rank() {
-    return [
-      {id: 1, titulo: 'Bleach', url: 'http://blablabla'},
-      {id: 1, titulo: 'Spy X Family', url: 'http://blablabla'},
-      {id: 1, titulo: 'Chainsaw Man', url: 'http://blablabla'},
-    ]
+  async rank() {
+    const dados = await this.prisma.votacao.groupBy({
+      by: ['animeID'],
+      _count: { animeID: true},
+      take: 3,
+      orderBy: { _count: { animeID: 'desc'}}
+    })
+
+    return await Promise.all(dados.map(async (resultado) => {
+        const anime = await this.prisma.anime.findFirst({where: {id: resultado.animeID }})
+        anime['votos'] = resultado._count.animeID;
+        return anime;
+    }))
   }
 }
